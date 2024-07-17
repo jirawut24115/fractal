@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include "MLX42.h"
 
-#define WIDTH 256
-#define HEIGHT 256
+#define WIDTH 1600
+#define HEIGHT 1600
 
 typedef struct s_screen
 {

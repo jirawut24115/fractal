@@ -13,12 +13,14 @@
 #include "fractol.h"
 #include <stdio.h>
 
-float map(int current, t_data *data, char c)
+double map(int current, t_data *data, char c)
 {
     if (c == 'x')
-        return (data->scaled_min_x + (current / (float)data->mlx->width) * (data->scaled_max_x - data->scaled_min_x));
+        return (data->scaled_min_x + (current / (double)data->mlx->width) * (data->scaled_max_x - data->scaled_min_x));
     else if (c == 'y')
-        return (data->scaled_min_y + (current / (float)data->mlx->height) * (data->scaled_max_y - data->scaled_min_y));
+        return (data->scaled_min_y + (current / (double)data->mlx->height) * (data->scaled_max_y - data->scaled_min_y));
+	else
+		return (0);
 }
 
 int	find_sign(char c)
@@ -28,12 +30,12 @@ int	find_sign(char c)
 	return (1);
 }
 
-float	ft_atof(char *str)
+double	ft_atof(char *str)
 {
-	float	whole;
-	float	dec;
-	float		sign;
-	float		i;
+	double	whole;
+	double	dec;
+	double		sign;
+	double		i;
 
 	sign = find_sign((*str));
 	if (sign == -1)
@@ -87,19 +89,50 @@ void	free_struct(t_data *data)
 	free(data);
 }
 
-unsigned int scale_color(int iter, t_data *data)
+// uint32_t scale_color(int iter, t_data *data)
+// {
+//     unsigned int color;
+//     double ratio = (double)iter / data->color_scale; // Calculate ratio based on iter and color_scale
+
+//     // Adjust color based on the ratio and a maximum value (0xFFFFFF)
+//     color = (unsigned int)(ratio * 0xFFFFFF);
+
+//     // Ensure color does not exceed the maximum possible value
+//     if (color > 0xFFFFFF) {
+//         color = 0xFFFFFF;
+//     }
+
+//     // Optionally, you can add an alpha channel (transparency) here if needed
+//     // Example: color |= 0xFF000000; // Add alpha channel (fully opaque)
+
+//     // Return the calculated color
+//     return (color |= 0x000000FF);
+// }
+
+// uint32_t scale_color(int iter, t_data *data)
+// {
+//     unsigned int color;
+//     double ratio = (double)iter / data->color_scale; // adjust this value to change the color range
+//     color = (unsigned int)(ratio * 0xFFFFFF); // add alpha channel
+// 	color /= iter;
+//     return ((uint32_t) 0xFF00FFFF);
+// }
+
+uint32_t	scale_color(int iter, t_data *data)
 {
-    unsigned int color;
-    float ratio = (float)iter / data->color_scale; // adjust this value to change the color range
-    color = (unsigned int)(ratio * 0xFFFFFFFF); // add alpha channel
-    return color;
+	unsigned int	color;
+	double			ratio;
+
+	ratio = iter / data->color_scale;
+	color = (unsigned int)(0xFF000000 * ratio / 7) | (unsigned int)(0x00FF0000 * ratio / 3) | (unsigned int)(0x0000FF00 * ratio / 5) | 0x000000FF;
+	return (color);
 }
 
-int	iteration_mandelbrot(int max, float x, float y)
+int	iteration_mandelbrot(int max, double x, double y)
 {
-	float	new_x;
-	float	new_y;
-	float	temp;
+	double	new_x;
+	double	new_y;
+	double	temp;
 	int		i;
 
 	new_x = x;
@@ -140,9 +173,9 @@ void	mandelbrot(t_data *data)
 	}
 }
 
-int	iteration_julia(int max, float x, float y, t_data *data)
+int	iteration_julia(int max, double x, double y, t_data *data)
 {
-	float	temp;
+	double	temp;
 	int		i;
 
 	i = 0;
@@ -210,7 +243,7 @@ void	set_default(t_data *data)
 
 void	initialize(t_data *data)
 {
-		data->mlx = mlx_init(1080, 720, "Fractals", true);
+		data->mlx = mlx_init(3840, 2075, "Fractals", true);
 		if (!data->mlx)
 			return ; // handle error
 		data->img = mlx_new_image(data->mlx, data->mlx->width, data->mlx->width);
@@ -281,7 +314,7 @@ void	keypress(mlx_key_data_t keydata, void *param)
 	if (mlx_is_key_down(data->mlx, MLX_KEY_C))
 		data->color_scale += 500;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ENTER))
-		printf("zoom = %f \nx_offset = %f\ny_offset = %f\nscaled_min_x = %f\nscaled_max_x = %f\nscaled_min_y = %f\nscaled_max_y = %f\n------------------------------\n", data->zoom, data->x_offset, data->y_offset,\
+		printf("zoom = %.20lf \nx_offset = %.20lf\ny_offset = %.20lf\nscaled_min_x = %.20lf\nscaled_max_x = %.20lf\nscaled_min_y = %.20lf\nscaled_max_y = %.20lf\n------------------------------\n", data->zoom, data->x_offset, data->y_offset,\
 	data->scaled_min_x, data->scaled_max_x, data->scaled_min_y, data->scaled_max_y);
 }
 
@@ -290,25 +323,28 @@ void zoom(double xdel, double ydel, void *param)
     t_data *data = (t_data *)param;
     int x_pos;
     int y_pos;
-    float zoom_factor;
+    double zoom_factor;
 
     if (ydel > 0)
-        zoom_factor = 1.02;
+        zoom_factor = 1.1;
     else
-        zoom_factor = 0.98;
-    data->zoom *= zoom_factor;
+        zoom_factor = 0.9;
 	mlx_get_mouse_pos(data->mlx, &x_pos, &y_pos);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_LEFT_CONTROL))
 	{
 		x_pos = data->mlx->width / 2;
 		y_pos = data->mlx->height / 2;
 	}
-	data->x_offset = map(x_pos, data, 'x');
-    data->y_offset = map(y_pos, data, 'y');
-	data->scaled_min_x = data->x_offset - (data->x_offset - data->scaled_min_x) * zoom_factor;
-    data->scaled_max_x = data->x_offset + (data->scaled_max_x - data->x_offset) * zoom_factor;
-    data->scaled_min_y = data->y_offset - (data->y_offset - data->scaled_min_y) * zoom_factor;
-    data->scaled_max_y = data->y_offset + (data->scaled_max_y - data->y_offset) * zoom_factor;
+	if ((data->zoom > 0.000000000000001 && ydel < 0) || (data->zoom < 500 && ydel > 0))
+	{
+		data->zoom *= zoom_factor;
+		data->x_offset = map(x_pos, data, 'x');
+	    data->y_offset = map(y_pos, data, 'y');
+		data->scaled_min_x = data->x_offset - (data->x_offset - data->scaled_min_x) * zoom_factor;
+	    data->scaled_max_x = data->x_offset + (data->scaled_max_x - data->x_offset) * zoom_factor;
+	    data->scaled_min_y = data->y_offset - (data->y_offset - data->scaled_min_y) * zoom_factor;
+	    data->scaled_max_y = data->y_offset + (data->scaled_max_y - data->y_offset) * zoom_factor;
+	}
 }
 
 
@@ -322,6 +358,16 @@ void	general_hook(void *param)
 	if (data->fractal->name == 2)
 		julia(data);
 }
+void	resize(int width, int height, void *param)
+{
+	t_data	*data;
+
+	data = (t_data *)param;
+	printf("%d %d\n",width, height);
+	data->mlx->width = width;
+	data->mlx->height = height;
+}
+
 
 int	main(int argc, char **argv)
 {
@@ -336,6 +382,7 @@ int	main(int argc, char **argv)
 	initialize(data);
 	mlx_key_hook(data->mlx, &keypress, (void *)data);
 	mlx_scroll_hook(data->mlx, zoom, (void *)data);
+	mlx_resize_hook(data->mlx, resize, (void *)data);
 	mlx_loop_hook(data->mlx, general_hook, (void *)data);
 	mlx_loop(data->mlx);
 	mlx_terminate(data->mlx);

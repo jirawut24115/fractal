@@ -19,8 +19,8 @@
 typedef struct s_fractal
 {
 	int		name; // 1 = mandelbrot 2 = Julia 3 = bonus
-	float	real;
-	float	img;
+	double	real;
+	double	img;
 	int		error;
 }	t_fractal;
 
@@ -29,15 +29,15 @@ typedef struct s_data
 	mlx_t	*mlx;
 	mlx_image_t	*img;
 	t_fractal	*fractal;
-	float	zoom;
-	float	x_offset;
-	float	y_offset;
-	float	scaled_min_x;
-	float	scaled_max_x;
-	float	scaled_min_y;
-	float	scaled_max_y;
+	double	zoom;
+	double	x_offset;
+	double	y_offset;
+	double	scaled_min_x;
+	double	scaled_max_x;
+	double	scaled_min_y;
+	double	scaled_max_y;
 	int		iter;
-	float	color_scale;
+	double	color_scale;
 }	t_data;
 
 #endif
