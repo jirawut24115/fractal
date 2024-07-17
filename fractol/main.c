@@ -6,7 +6,7 @@
 /*   By: jchompoo <jchompoo@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 15:35:58 by jichompo          #+#    #+#             */
-/*   Updated: 2024/07/15 00:05:37 by jchompoo         ###   ########.fr       */
+/*   Updated: 2024/07/17 22:35:29 by jchompoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,42 +89,19 @@ void	free_struct(t_data *data)
 	free(data);
 }
 
-// uint32_t scale_color(int iter, t_data *data)
-// {
-//     unsigned int color;
-//     double ratio = (double)iter / data->color_scale; // Calculate ratio based on iter and color_scale
-
-//     // Adjust color based on the ratio and a maximum value (0xFFFFFF)
-//     color = (unsigned int)(ratio * 0xFFFFFF);
-
-//     // Ensure color does not exceed the maximum possible value
-//     if (color > 0xFFFFFF) {
-//         color = 0xFFFFFF;
-//     }
-
-//     // Optionally, you can add an alpha channel (transparency) here if needed
-//     // Example: color |= 0xFF000000; // Add alpha channel (fully opaque)
-
-//     // Return the calculated color
-//     return (color |= 0x000000FF);
-// }
-
-// uint32_t scale_color(int iter, t_data *data)
-// {
-//     unsigned int color;
-//     double ratio = (double)iter / data->color_scale; // adjust this value to change the color range
-//     color = (unsigned int)(ratio * 0xFFFFFF); // add alpha channel
-// 	color /= iter;
-//     return ((uint32_t) 0xFF00FFFF);
-// }
-
-uint32_t	scale_color(int iter, t_data *data)
+uint32_t scale_color(int iter, t_data *data)
 {
-	unsigned int	color;
-	double			ratio;
+    uint32_t red;
+    uint32_t green;
+    uint32_t blue;
+    uint32_t color;
 
-	ratio = iter / data->color_scale;
-	color = (unsigned int)(0xFF000000 * ratio / 7) | (unsigned int)(0x00FF0000 * ratio / 3) | (unsigned int)(0x0000FF00 * ratio / 5) | 0x000000FF;
+	red = (uint32_t)(sin((double)iter) * 255 * data->color_scale);
+	green = (uint32_t)(tan((double)iter) * 255 * data->color_scale);
+	blue = (uint32_t)(cos((double)iter)* 255 * data->color_scale);
+	color = (red << 24) | (green << 16) | (blue << 8) | 0x000000FF;
+	if (color == 0x000000FF)
+		color = 0xFFFFFFFF;
 	return (color);
 }
 
@@ -164,7 +141,7 @@ void	mandelbrot(t_data *data)
 		{
 			i = iteration_mandelbrot(data->iter, map(x, data, 'x'), map(y, data, 'y'));
 			if (i == data->iter)
-				mlx_put_pixel(data->img, x, y, 0xFFFFFFFF);
+				mlx_put_pixel(data->img, x, y, 0x000000FF);
 			else
 				mlx_put_pixel(data->img, x, y, scale_color(i, data));
 			y++;
@@ -205,7 +182,7 @@ void	julia(t_data *data)
 		{
 			i = iteration_julia(data->iter, map(x, data, 'x'), map(y, data, 'y'), data);
 			if (i == data->iter)
-				mlx_put_pixel(data->img, x, y, 0xFFFFFFFF);
+				mlx_put_pixel(data->img, x, y, 0x000000FF);
 			else
 				mlx_put_pixel(data->img, x, y, scale_color(i, data));
 			y++;
@@ -238,7 +215,7 @@ void	set_default(t_data *data)
 	if (data->fractal->name == 2)
 		set_default_julia(data);
 	data->iter = 50;
-	data->color_scale = 0;
+	data->color_scale = 0.01;
 }
 
 void	initialize(t_data *data)
@@ -258,23 +235,23 @@ void	shift(t_data *data, char c)
 {
 	if (c == 'l')
 	{
-		data->scaled_max_x -= (0.1 * data->zoom);
-		data->scaled_min_x -= (0.1 * data->zoom);
+		data->scaled_max_x -= (0.5 * data->zoom);
+		data->scaled_min_x -= (0.5 * data->zoom);
 	}
 	if (c == 'r')
 	{
-		data->scaled_max_x += (0.1 * data->zoom);
-		data->scaled_min_x += (0.1 * data->zoom);
+		data->scaled_max_x += (0.5 * data->zoom);
+		data->scaled_min_x += (0.5 * data->zoom);
 	}
 	if (c == 'u')
 	{
-		data->scaled_max_y += (0.1 * data->zoom);
-		data->scaled_min_y += (0.1 * data->zoom);
+		data->scaled_max_y += (0.5 * data->zoom);
+		data->scaled_min_y += (0.5 * data->zoom);
 	}
 	if (c == 'd')
 	{
-		data->scaled_max_y -= (0.1 * data->zoom);
-		data->scaled_min_y -= (0.1 * data->zoom);
+		data->scaled_max_y -= (0.5 * data->zoom);
+		data->scaled_min_y -= (0.5 * data->zoom);
 	}
 }
 
@@ -288,6 +265,13 @@ void	set_iteration(t_data *data, char c)
 		data->iter -= 10;
 	else
 		ft_printf("Iteration at min.\n");
+}
+void	set_color(t_data *data)
+{
+	if (data->color_scale < 1)
+		data->color_scale += 0.01;
+	else
+		data->color_scale = 0.01;
 }
 
 void	keypress(mlx_key_data_t keydata, void *param)
@@ -312,7 +296,7 @@ void	keypress(mlx_key_data_t keydata, void *param)
 	if (mlx_is_key_down(data->mlx, MLX_KEY_N))
 		set_iteration(data, '-');
 	if (mlx_is_key_down(data->mlx, MLX_KEY_C))
-		data->color_scale += 500;
+		set_color(data);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ENTER))
 		printf("zoom = %.20lf \nx_offset = %.20lf\ny_offset = %.20lf\nscaled_min_x = %.20lf\nscaled_max_x = %.20lf\nscaled_min_y = %.20lf\nscaled_max_y = %.20lf\n------------------------------\n", data->zoom, data->x_offset, data->y_offset,\
 	data->scaled_min_x, data->scaled_max_x, data->scaled_min_y, data->scaled_max_y);
@@ -335,7 +319,7 @@ void zoom(double xdel, double ydel, void *param)
 		x_pos = data->mlx->width / 2;
 		y_pos = data->mlx->height / 2;
 	}
-	if ((data->zoom > 0.000000000000001 && ydel < 0) || (data->zoom < 500 && ydel > 0))
+	if ((data->zoom > 1.0E-15 && ydel < 0) || (data->zoom < 500 && ydel > 0))
 	{
 		data->zoom *= zoom_factor;
 		data->x_offset = map(x_pos, data, 'x');
@@ -360,14 +344,10 @@ void	general_hook(void *param)
 }
 void	resize(int width, int height, void *param)
 {
-	t_data	*data;
-
-	data = (t_data *)param;
-	printf("%d %d\n",width, height);
-	data->mlx->width = width;
-	data->mlx->height = height;
+	(void)param;
+	(void)width;
+	(void)height;
 }
-
 
 int	main(int argc, char **argv)
 {

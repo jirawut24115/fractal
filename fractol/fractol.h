@@ -6,7 +6,7 @@
 /*   By: jchompoo <jchompoo@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 15:36:53 by jichompo          #+#    #+#             */
-/*   Updated: 2024/07/14 23:57:59 by jchompoo         ###   ########.fr       */
+/*   Updated: 2024/07/17 22:13:21 by jchompoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 # define FRACTOL_H
 # include "libft.h"
 # include "MLX42.h"
-
+# include <math.h>
+# include <stdlib.h>
 
 typedef struct s_fractal
 {
