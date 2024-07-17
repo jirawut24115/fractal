@@ -22,7 +22,6 @@ void	change_color(mlx_image_t *img, unsigned int x)
 			mlx_put_pixel(img, i, j, x);
 		}
 	}
-	
 }
 
 void	keypress(mlx_key_data_t keydata, void *param)
@@ -56,7 +55,7 @@ int	main(void)
 	screen->mlx = mlx_init(WIDTH, HEIGHT, "TEST", true);
 	if (!screen->mlx)
 		return (printf("Init Error\n"), -1);
-	screen->img = mlx_new_image(screen->mlx, 256, 256);
+	screen->img = mlx_new_image(screen->mlx, screen->mlx->width, screen->mlx->height);
 	if (!screen->img || (mlx_image_to_window(screen->mlx, screen->img, 0, 0) < 0))
 		return (printf("Img error\n"), -1);
 	change_color(screen->img, 0xFFFFFFFF);
