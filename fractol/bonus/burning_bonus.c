@@ -1,48 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mandelbrot.c                                       :+:      :+:    :+:   */
+/*   burning_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jchompoo <jchompoo@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: jichompo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/17 22:52:41 by jchompoo          #+#    #+#             */
-/*   Updated: 2024/07/17 23:40:04 by jchompoo         ###   ########.fr       */
+/*   Created: 2024/07/18 18:45:47 by jichompo          #+#    #+#             */
+/*   Updated: 2024/07/18 18:45:49 by jichompo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fractol.h"
+#include "fractol_bonus.h"
 
-void	set_default_mandelbrot(t_data *data)
+void	set_default_burning(t_data *data)
 {
-	data->scaled_min_x = -2.5;
-	data->scaled_max_x = 1.5;
+	data->scaled_min_x = -2;
+	data->scaled_max_x = 2;
 	data->scaled_min_y = -2;
 	data->scaled_max_y = 2;
 }
 
-int	iteration_mandelbrot(int max, double x, double y)
+int	iteration_burning(int max, double x, double y)
 {
 	double	new_x;
 	double	new_y;
 	double	temp;
 	int		i;
 
-	new_x = x;
-	new_y = y;
+	new_x = 0;
+	new_y = 0;
 	i = 0;
 	while (i <= max)
 	{
-		temp = (new_x * new_x) - (new_y * new_y) + x;
-		new_y = (2 * new_x * new_y) + y;
-		new_x = temp;
 		if (new_x * new_x + new_y * new_y > 4)
 			return (i);
+		temp = (new_x * new_x) - (new_y * new_y) + x;
+		new_y = fabs((2 * new_x * new_y)) + y;
+		new_x = fabs(temp);
 		i++;
 	}
 	return (max);
 }
 
-void	mandelbrot(t_data *data)
+void	burning(t_data *data)
 {
 	int	x;
 	int	y;
@@ -54,7 +54,7 @@ void	mandelbrot(t_data *data)
 		y = 0;
 		while (y < data->mlx->height)
 		{
-			i = iteration_mandelbrot(data->iter, map(x, data, 'x'),
+			i = iteration_burning(data->iter, map(x, data, 'x'),
 					map(y, data, 'y'));
 			if (i == data->iter)
 				mlx_put_pixel(data->img, x, y, 0x000000FF);

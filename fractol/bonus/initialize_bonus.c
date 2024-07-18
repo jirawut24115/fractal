@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fractol.h"
+#include "fractol_bonus.h"
 
 void	initialize(t_data *data)
 {
@@ -34,6 +34,8 @@ void	set_default(t_data *data)
 		set_default_mandelbrot(data);
 	if (data->fractal->name == 2)
 		set_default_julia(data);
+	if (data->fractal->name == 3)
+		set_default_burning(data);
 	data->iter = 50;
 	data->color_scale = 0.01;
 	ft_printf("%s", HELP);
@@ -64,21 +66,22 @@ t_fractal	*set_fractal(int argc, char **argv)
 	t_fractal	*result;
 
 	result = malloc(sizeof(t_fractal));
-	if (argc == 2 && !ft_strcmp(argv[1], "Mandelbrot"))
+	if (argc == 2 && (!ft_strcmp(argv[1], "Mandelbrot")
+			|| !ft_strcmp(argv[1], "Burning")))
 	{
-		result->name = 1;
+		if (!ft_strcmp(argv[1], "Mandelbrot"))
+			result->name = 1;
+		else
+			result->name = 3;
 		result->real = 0;
 		result->img = 0;
-		result->error = 0;
 	}
 	else if (argc == 4 && !ft_strcmp(argv[1], "Julia"))
 	{
 		result->name = 2;
 		result->real = ft_atof(argv[2]);
 		result->img = ft_atof(argv[3]);
-		result->error = 0;
 	}
-	else
-		result->error = 1;
+	ft_printf("%d\n", result->name);
 	return (result);
 }

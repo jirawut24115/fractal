@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fractol.h"
+#include "fractol_bonus.h"
 
 void	keypress(mlx_key_data_t keydata, void *param)
 {
@@ -47,6 +47,8 @@ void	general_hook(void *param)
 		mandelbrot(data);
 	if (data->fractal->name == 2)
 		julia(data);
+	if (data->fractal->name == 3)
+		burning(data);
 }
 
 void	resize(int width, int height, void *param)

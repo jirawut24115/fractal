@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fractol.h"
+#include "fractol_bonus.h"
 
 void	set_default_julia(t_data *data)
 {
@@ -51,7 +51,7 @@ void	julia(t_data *data)
 		while (y <= data->mlx->height)
 		{
 			i = iteration_julia(data->iter, map(x, data, 'x'),
-					map(y, data, 'y'), data);
+					(map(y, data, 'y') * -1), data);
 			if (i == data->iter)
 				mlx_put_pixel(data->img, x, y, 0x000000FF);
 			else

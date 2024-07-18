@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fractol.h"
+#include "fractol_bonus.h"
 
 static int	check_dot(char *str)
 {
@@ -51,7 +51,8 @@ void	check_input(int argc, char **argv)
 {
 	if (argc != 2 && argc != 4)
 		my_exit(USAGE, NULL);
-	if (argc == 2 && (ft_strcmp(argv[1], "Mandelbrot") != 0))
+	if (argc == 2 && ((!ft_strcmp(argv[1], "Mandelbrot"))
+			&& !ft_strcmp(argv[1], "Burning")))
 		my_exit(USAGE, NULL);
 	if (argc == 4 && ft_strcmp(argv[1], "Julia"))
 		my_exit(USAGE, NULL);
