@@ -1,6 +1,8 @@
 {
 	"files.associations": {
 		"libft.h": "c",
-		"mlx42.h": "c"
+		"mlx42.h": "c",
+		"fractol.h": "c",
+		"mlx42_int.h": "c"
 	}
 }
